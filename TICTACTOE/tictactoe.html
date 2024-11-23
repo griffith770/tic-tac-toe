@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: #f7f7f7;
+        }
+        h1 {
+            color: #444;
+            margin-top: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            margin: 20px auto;
+            width: max-content;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #555;
+            background-color: #fff;
+            transition: background 0.3s ease;
+            border-radius: 5px;
+        }
+        .cell:hover {
+            background-color: #ddd;
+        }
+        .cell.red {
+            background-color: #ff4c4c;
+            color: white;
+        }
+        .cell.blue {
+            background-color: #4c4cff;
+            color: white;
+        }
+        .winner-message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #555;
+        }
+        .reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            transition: background 0.3s ease;
+        }
+        .reset-button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="board"></div>
+    <div class="winner-message" id="winnerMessage"></div>
+    <button class="reset-button" id="resetButton">Reset Game</button>
+
+    <script>
+        const board = document.getElementById("board");
+        const winnerMessage = document.getElementById("winnerMessage");
+        const resetButton = document.getElementById("resetButton");
+
+        let currentPlayer = "red"; // Red starts the game
+        let gameActive = true;
+        const cells = Array(9).fill(null);
+
+        // Create cells
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.dataset.index = i;
+            board.appendChild(cell);
+
+            cell.addEventListener("click", () => {
+                if (!gameActive || cells[i]) return;
+
+                // Mark the cell
+                cell.classList.add(currentPlayer);
+                cell.textContent = currentPlayer === "red" ? "X" : "O";
+                cells[i] = currentPlayer;
+
+                // Check for winner
+                if (checkWinner()) {
+                    winnerMessage.textContent = `${currentPlayer.toUpperCase()} IS THE WINNER!!`;
+                    gameActive = false;
+                } else if (cells.every(cell => cell)) {
+                    winnerMessage.textContent = "It's a tie!";
+                    gameActive = false;
+                } else {
+                    // Switch player
+                    currentPlayer = currentPlayer === "red" ? "blue" : "red";
+                }
+            });
+        }
+
+        // Winning combinations
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+
+        function checkWinner() {
+            return winningCombinations.some(combination => {
+                return combination.every(index => cells[index] === currentPlayer);
+            });
+        }
+
+        // Reset game
+        resetButton.addEventListener("click", () => {
+            cells.fill(null);
+            gameActive = true;
+            currentPlayer = "red";
+            winnerMessage.textContent = "";
+            Array.from(board.children).forEach(cell => {
+                cell.classList.remove("red", "blue");
+                cell.textContent = "";
+            });
+        });
+    </script>
+</body>
+</html>
